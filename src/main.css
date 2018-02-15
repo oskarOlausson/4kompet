@@ -379,6 +379,32 @@ article {
     margin: auto;
 }
 
+@media only screen and (max-width: 50rem) {
+    #chords {
+        display: grid;
+        grid-template-columns: repeat(2 , 1fr);
+        flex-wrap: wrap;
+        align-items: center;
+        justify-items: stretch;
+        grid-gap: 1rem 1rem;
+        max-width: 80rem;
+        margin: auto;
+    }
+}
+
+@media only screen and (max-width: 30rem) {
+    #chords {
+        display: grid;
+        grid-template-columns: repeat(1 , 1fr);
+        flex-wrap: wrap;
+        align-items: center;
+        justify-items: stretch;
+        grid-gap: 1rem 1rem;
+        max-width: 80rem;
+        margin: auto;
+    }
+}
+
 .bar {
     padding: 1rem;
     background-color: #FEF5EF;
