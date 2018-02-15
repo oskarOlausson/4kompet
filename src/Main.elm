@@ -363,7 +363,7 @@ editDock model song =
                     List.map
                         (\s -> p [] [ text s ])
                         [ ", = taktseparerare", "|: = start på repris", ":| = slut på repris" ]
-                , textarea [ id "chordInput", rows 5, onInput <| UpdateChords song, value song.chords ] []
+                , textarea [ id "chordInput", rows 8, onInput <| UpdateChords song, value song.chords ] []
                 ]
             ]
         , div [ class "buttonRow" ]
@@ -474,6 +474,7 @@ displaySettings song =
     div [ id "settings" ]
         [ inputBox "Namn" song.name (ChangeSongName song)
         , inputBox "Tonart" song.key (ChangeKey song)
+        , inputBox "Kommentar" song.comment (ChangeComment song)
         , div [ class "pulseInputParent" ] <|
             List.map
                 (pulseButton song)
@@ -538,10 +539,16 @@ displaySong editMode amount song =
 
         ifNotEdit =
             if not editMode.loggedIn || not editMode.editing then
-                div [ id "description" ]
-                    [ div [ class "songDescription" ] [ text <| "namn: " ++ toSentenceCase song.name ]
-                    , div [] [ text <| "taktart: " ++ toString enumerator ++ "/" ++ toString denominator ]
-                    , div [] [ text <| "tonart: " ++ transpose song.key amount ]
+                div [ id "songTop" ]
+                    [ div [ id "description" ]
+                        [ div [ class "songDescription" ] [ text <| "namn: " ++ toSentenceCase song.name ]
+                        , div [] [ text <| "taktart: " ++ toString enumerator ++ "/" ++ toString denominator ]
+                        , div [] [ text <| "tonart: " ++ transpose song.key amount ]
+                        ]
+                    , if String.isEmpty song.comment then
+                        text ""
+                      else
+                        div [ id "comment" ] [ text <| song.comment ]
                     ]
             else
                 text ""

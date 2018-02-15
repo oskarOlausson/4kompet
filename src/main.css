@@ -76,6 +76,7 @@ button:hover {
     width: 100%;
     height: 100%;
     padding: 1rem;
+    font-size: 1.2rem;
 }
 
 #settings {
@@ -135,10 +136,21 @@ button:hover {
     margin: .1rem;
 }
 
+#songTop {
+    flex-direction: row;
+    flex-wrap:wrap;
+    justify-content: space-around;
+    margin-bottom: .5rem;
+}
+
 #description {
     font-size: 1.5rem;
     justify-content: flex-start;
     align-items: flex-start;
+}
+
+#comment {
+    border: .1rem solid gray;
 }
 
 #description div {
@@ -449,6 +461,7 @@ article {
 .group 			  {
   position:relative;
   margin-bottom:2.5rem;
+  width: 300px;
 }
 
 .searchBox {
@@ -456,9 +469,9 @@ article {
 }
 input 				{
   font-size:18px;
-  padding:10px 10px 10px 5px;
+  padding:10px 0 10px 5px;
   display:block;
-  width:300px;
+  width:100%;
   border:none;
   border-bottom:.1rem solid #757575;
 }
@@ -514,7 +527,7 @@ input:focus ~ .inputBar:before, input:focus ~ .inputBar:after {
 .highlight {
   position:absolute;
   height:60%;
-  width:100px;
+  width:100%;
   top:25%;
   left:0;
   pointer-events:none;
