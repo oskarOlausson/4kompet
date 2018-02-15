@@ -86,7 +86,7 @@ update msg model =
                         , chords = transpose song.chords model.transposing
                     }
             in
-            ( { model | displaySong = Just newSong }, Cmd.none )
+            ( { model | displaySong = Just newSong, transposing = 0 }, Cmd.none )
 
         SetAsCurrentSong song ->
             let
@@ -339,9 +339,9 @@ view model =
 
                     Just song ->
                         [ if model.editMode.editing && model.editMode.loggedIn then
-                            editDock model song
-                          else
                             text ""
+                          else
+                            editDock model song
                         , displaySong model.editMode model.transposing song
                         ]
             , displayMenu model
