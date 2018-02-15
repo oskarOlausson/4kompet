@@ -94,6 +94,7 @@ app.ports.signIn.subscribe(function(psw) {
 
     firebase.auth().signInWithEmailAndPassword(userName, psw).catch(function(error) {
         app.ports.signedIn.send(false);
+        app.ports.errorMsg.send("Ogiltigt lösenord");
     });
 
 

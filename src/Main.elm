@@ -162,7 +162,13 @@ update msg model =
             ( { model | errors = model.errors ++ [ str ] }, Cmd.none )
 
         RetrieveLostSong ->
-            ( { model | displaySong = model.unpublished, currentSong = model.unpublished }, Cmd.none )
+            ( { model
+                | displaySong = model.unpublished
+                , currentSong = model.unpublished
+                , unpublished = Nothing
+              }
+            , Cmd.none
+            )
 
         UpdateChords song newChords ->
             let
@@ -332,39 +338,8 @@ view model =
                         []
 
                     Just song ->
-                        let
-                            new =
-                                isNewSong model.songs song
-                        in
                         [ if model.editMode.editing then
-                            div [ id "entireDock" ]
-                                [ div [ id "editDock" ]
-                                    [ displaySettings song
-                                    , div []
-                                        [ div [ class "hints" ] <|
-                                            List.map
-                                                (\s -> p [] [ text s ])
-                                                [ ", = taktseparerare", "|: = start på repris", ":| = slut på repris" ]
-                                        , textarea [ id "chordInput", rows 5, onInput <| UpdateChords song, value song.chords ] []
-                                        ]
-                                    ]
-                                , div [ class "buttonRow" ]
-                                    [ if new then
-                                        button [ onClick <| UploadToFirebase song ]
-                                            [ text <|
-                                                "Ladda upp"
-                                            ]
-                                      else
-                                        button [ onClick <| UpdateSongAtFirebase song ]
-                                            [ text <|
-                                                "Uppdatera"
-                                            ]
-                                    , if new then
-                                        button [ class "deleteButton, inactive" ] [ text "Opublicerad" ]
-                                      else
-                                        button [ class "deleteButton", onClick <| RequestToRemoveSong song ] [ text "Ta bort" ]
-                                    ]
-                                ]
+                            editDock model song
                           else
                             text ""
                         , displaySong model.editMode.editing model.transposing song
@@ -374,18 +349,57 @@ view model =
         ]
 
 
+editDock : Model -> Song -> Html Msg
+editDock model song =
+    let
+        new =
+            isNewSong model.songs song
+    in
+    div [ id "entireDock" ]
+        [ div [ id "editDock" ]
+            [ displaySettings song
+            , div []
+                [ div [ class "hints" ] <|
+                    List.map
+                        (\s -> p [] [ text s ])
+                        [ ", = taktseparerare", "|: = start på repris", ":| = slut på repris" ]
+                , textarea [ id "chordInput", rows 5, onInput <| UpdateChords song, value song.chords ] []
+                ]
+            ]
+        , div [ class "buttonRow" ]
+            [ if new then
+                button [ onClick <| UploadToFirebase song ]
+                    [ text <|
+                        "Ladda upp"
+                    ]
+              else
+                button [ onClick <| UpdateSongAtFirebase song ]
+                    [ text <|
+                        "Uppdatera"
+                    ]
+            , if new then
+                button [ class "deleteButton, inactive" ] [ text "Opublicerad" ]
+              else
+                button [ class "deleteButton", onClick <| RequestToRemoveSong song ] [ text "Ta bort" ]
+            ]
+        ]
+
+
 editModeStuff : Model -> Html Msg
 editModeStuff model =
-    div []
+    div [ id "topButtons" ]
         [ case model.unpublished of
             Just s ->
-                button [ onClick RetrieveLostSong ] [ text "Hjälp min låt försvann!" ]
+                button [ id "helpButton", onClick RetrieveLostSong ] [ text "Hjälp min låt försvann!" ]
 
             Nothing ->
                 text ""
         , if model.editMode.editing then
             if model.editMode.loggedIn then
-                button [ onClick <| SetEditMode False ] [ text "Sluta redigera" ]
+                div []
+                    [ button [ id "addButton", onClick NewSong ] [ text "ny låt" ]
+                    , button [ onClick <| SetEditMode False ] [ text "Sluta redigera" ]
+                    ]
             else
                 div [ id "loginForm" ]
                     [ input [ type_ "password", onInput UpdatePassword, onSubmit SignIn, placeholder "Lösenord" ] []
@@ -415,17 +429,21 @@ displayMenu model =
                     [ div [ class "actualMenu" ]
                         [ div [ id "menuHeader" ]
                             [ div [ class "menuDescriptor" ] [ text "Låtar" ]
-                            , inputBoxExt "searchBox" "search" "" model.filter Search
+                            , inputBoxExt "searchBox"
+                                (input
+                                    [ onInput Search
+                                    , placeholder "Sök"
+                                    ]
+                                    [ text model.filter
+                                    ]
+                                )
+                                Nothing
                             ]
                         , div [ id "songItems" ]
                             (List.map songItem <|
                                 filterList model.filter <|
                                     model.songs
                             )
-                        , if model.editMode.loggedIn then
-                            button [ id "addButton", onClick NewSong ] [ text "ny" ]
-                          else
-                            text ""
                         ]
                     ]
                )
@@ -451,7 +469,7 @@ displaySettings : Song -> Html Msg
 displaySettings song =
     let
         pulse =
-            [ ( 2, 4 ), ( 3, 4 ), ( 4, 4 ), ( 6, 8 ), ( 7, 8 ), ( 11, 16 ) ]
+            [ ( 2, 4 ), ( 3, 4 ), ( 4, 4 ), ( 5, 8 ), ( 6, 8 ), ( 7, 8 ), ( 9, 16 ), ( 11, 16 ) ]
     in
     div [ id "settings" ]
         [ inputBox "Namn" song.name (ChangeSongName song)
@@ -465,26 +483,38 @@ displaySettings song =
 
 inputBox : String -> String -> (String -> Msg) -> Html Msg
 inputBox hint currentValue msg =
-    inputBoxExt "" "text" hint currentValue msg
-
-
-inputBoxExt : String -> String -> String -> String -> (String -> Msg) -> Html Msg
-inputBoxExt c typeType hint currentValue msg =
-    div [ class "group", class c ]
-        [ input
-            [ type_ typeType
-            , onInput msg
+    inputBoxExt ""
+        (input
+            [ onInput msg
             , required True
             , value currentValue
             ]
             []
+        )
+        (Just hint)
+
+
+inputBoxExt : String -> Html Msg -> Maybe String -> Html Msg
+inputBoxExt c myInput hint =
+    let
+        hinting =
+            case hint of
+                Nothing ->
+                    []
+
+                Just hint ->
+                    [ if String.isEmpty hint then
+                        text ""
+                      else
+                        label [] [ text hint ]
+                    ]
+    in
+    div [ class "group", class c ] <|
+        [ myInput
         , span [ class "highlight" ] []
         , span [ class "inputBar" ] []
-        , if String.isEmpty hint then
-            text ""
-          else
-            label [] [ text hint ]
         ]
+            ++ hinting
 
 
 pulseButton : Song -> ( Int, Int ) -> Html Msg

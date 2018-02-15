@@ -15,6 +15,11 @@ html {
     height: 100%;
 }
 
+
+.all {
+    height: 100%;
+}
+
 h1 {
   font-size: 2rem;
   margin-left: 3rem;
@@ -196,6 +201,71 @@ header {
     border: .2rem solid #454851;
 }
 
+.errorMessage {
+    padding: 1rem;
+}
+
+
+main {
+    width: 100%;
+    min-height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: stretch;
+}
+
+
+article {
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+}
+
+#topButtons {
+    display: flex;
+    flex-direction: row;
+}
+
+#helpButton {
+    background-color: #FF715B;
+}
+
+#helpButton:hover {
+    background-color: #EE604A;
+}
+
+.menu {
+    right: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+}
+
+
+
+.actualMenu {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    height: 100%;
+
+
+    background-color: rgba(240,240,240,1);
+    z-index: 10;
+}
+
+
+#menuHeader {
+    display: flex;
+    flex-direction: column;
+    justify-content: stretch;
+    align-items: center;
+}
+
+
 #menuToggleButton {
     background-color: rgba(240,240,240,1);
     color: #454851;
@@ -209,63 +279,6 @@ header {
     border-radius: 0;
 }
 
-.errorMessage {
-    padding: 1rem;
-}
-
-.all {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-}
-
-main {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-}
-
-
-article {
-    display: flex;
-    flex-grow: 1;
-    flex-direction: column;
-    align-items: center;
-    padding: 2rem;
-}
-
-.menu {
-    right: 0;
-    display: flex;
-    flex-direction: row;
-}
-
-
-
-.actualMenu {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-
-
-    background-color: rgba(240,240,240,1);
-    z-index: 10;
-}
-
-#toggleMenuButton {
-    cursor: pointer;
-    align-self: flex-start;
-}
-
-#menuHeader {
-    border-bottom: .3rem solid #8080ed;
-    display: flex;
-    flex-direction: column;
-    justify-content: stretch;
-    align-items: center;
-}
 
 #songItems {
     padding: none;
@@ -305,10 +318,6 @@ article {
     color: white;
 }
 
-#addButton {
-    background-color: #7BAE7F;
-    color: #454851;
-}
 
 .removeFromListButton {
     cursor: pointer;
@@ -362,6 +371,7 @@ article {
 #chords {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
+    flex-wrap: wrap;
     align-items: center;
     justify-items: stretch;
     grid-gap: 1rem 1rem;
