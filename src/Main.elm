@@ -338,11 +338,11 @@ view model =
                         []
 
                     Just song ->
-                        [ if model.editMode.editing then
+                        [ if model.editMode.editing && model.editMode.loggedIn then
                             editDock model song
                           else
                             text ""
-                        , displaySong model.editMode.editing model.transposing song
+                        , displaySong model.editMode model.transposing song
                         ]
             , displayMenu model
             ]
@@ -530,14 +530,14 @@ pulseButton song ( a, b ) =
         [ text <| toString a ++ "/" ++ toString b ]
 
 
-displaySong : Bool -> Int -> Song -> Html Msg
+displaySong : EditMode -> Int -> Song -> Html Msg
 displaySong editMode amount song =
     let
         ( enumerator, denominator ) =
             song.pulse
 
         ifNotEdit =
-            if not editMode then
+            if not editMode.loggedIn || not editMode.editing then
                 div [ id "description" ]
                     [ div [ class "songDescription" ] [ text <| "namn: " ++ toSentenceCase song.name ]
                     , div [] [ text <| "taktart: " ++ toString enumerator ++ "/" ++ toString denominator ]
@@ -552,7 +552,7 @@ displaySong editMode amount song =
         , p [] [ text "Transponera" ]
         , div []
             [ button [ class "transposeButton", onClick (TransposeSong False) ] [ text <| transpose song.key (amount - 1) ]
-            , if editMode then
+            , if not editMode.loggedIn || not editMode.editing then
                 button [ class "transposeButton", onClick (SetAsNewKey song) ] [ text <| "Sätt som originalTonart " ]
               else
                 button [ class "transposeButton", onClick TransposeBack ] [ text <| "OriginalTonart " ]
