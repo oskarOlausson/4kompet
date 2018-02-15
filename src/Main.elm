@@ -339,9 +339,9 @@ view model =
 
                     Just song ->
                         [ if model.editMode.editing && model.editMode.loggedIn then
-                            text ""
-                          else
                             editDock model song
+                          else
+                            text ""
                         , displaySong model.editMode model.transposing song
                         ]
             , displayMenu model
@@ -552,7 +552,7 @@ displaySong editMode amount song =
         , p [] [ text "Transponera" ]
         , div []
             [ button [ class "transposeButton", onClick (TransposeSong False) ] [ text <| transpose song.key (amount - 1) ]
-            , if not editMode.loggedIn || not editMode.editing then
+            , if editMode.loggedIn && editMode.editing then
                 button [ class "transposeButton", onClick (SetAsNewKey song) ] [ text <| "Sätt som originalTonart " ]
               else
                 button [ class "transposeButton", onClick TransposeBack ] [ text <| "OriginalTonart " ]
