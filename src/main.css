@@ -526,7 +526,21 @@ article {
 }
 
 
+#succeed {
+    position: fixed;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
 
+.shown {
+    top: 50%;
+    opacity: 1;
+}
+
+.hidden {
+    top: -10%;
+    transition: top .2s;
+}
 
 /* === Material input === */
 .group 			  {

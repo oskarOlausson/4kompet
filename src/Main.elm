@@ -1,5 +1,6 @@
 module Main exposing (..)
 
+import AnimationFrame exposing (diffs, times)
 import Harbor exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (attribute, class, cols, id, placeholder, required, rows, src, style, type_, value)
@@ -10,6 +11,7 @@ import Messages exposing (..)
 import SongToJson exposing (..)
 import Songs exposing (..)
 import String.Extra exposing (replace, toSentenceCase)
+import Time exposing (Time, every, second)
 
 
 ---- MODEL ----
@@ -32,6 +34,7 @@ type alias Model =
     , editMode : EditMode
     , menuMinimized : Bool
     , errors : List String
+    , time : Float
     }
 
 
@@ -47,6 +50,7 @@ modelInit =
     , editMode = EditMode False False
     , menuMinimized = False
     , errors = []
+    , time = 0
     }
 
 
@@ -62,6 +66,12 @@ init =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        Tick delta ->
+            if model.time > 0 then
+                ( { model | time = model.time - delta }, Cmd.none )
+            else
+                ( { model | time = 0 }, Cmd.none )
+
         Search str ->
             ( { model | filter = str }, Cmd.none )
 
@@ -257,13 +267,13 @@ update msg model =
             if String.isEmpty song.name then
                 ( { model | errors = model.errors ++ [ "Du måste ha ett namn på låten" ] }, Cmd.none )
             else
-                ( model, newSong <| songToJson song )
+                ( { model | time = second }, newSong <| songToJson song )
 
         UpdateSongAtFirebase song ->
             if String.isEmpty song.name then
                 ( { model | errors = model.errors ++ [ "Du måste ha ett namn på låten" ] }, Cmd.none )
             else
-                ( model, updateSong <| songToJson song )
+                ( { model | time = second }, updateSong <| songToJson song )
 
         ToggleMenuSize ->
             ( { model | menuMinimized = not model.menuMinimized }, Cmd.none )
@@ -332,6 +342,16 @@ view model =
             ]
         , main_ []
             [ errors
+            , img
+                [ id "succeed"
+                , class <|
+                    if model.time > 0 then
+                        "shown"
+                    else
+                        "hidden"
+                , src "upload.svg"
+                ]
+                []
             , article [] <|
                 case model.displaySong of
                     Nothing ->
@@ -618,6 +638,7 @@ subscriptions model =
         , errorMsg DisplayError
         , signedIn IsLoggedIn
         , setId SetIdOnDisplaySong
+        , diffs Tick
         ]
 
 

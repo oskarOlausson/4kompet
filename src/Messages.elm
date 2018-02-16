@@ -2,6 +2,7 @@ module Messages exposing (..)
 
 import Json.Decode exposing (Value)
 import Songs exposing (Song)
+import Time exposing (Time)
 
 
 type FirebaseSongEvent
@@ -35,3 +36,4 @@ type Msg
     | SetIdOnDisplaySong String
     | ClearErrors
     | RetrieveLostSong
+    | Tick Time
